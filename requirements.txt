@@ -2,3 +2,7 @@ rake-nltk
 numpy
 scipy
 pandas
+python-secrets
+
+pvrecorder
+pvcheetah
