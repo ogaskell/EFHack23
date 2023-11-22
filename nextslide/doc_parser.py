@@ -26,3 +26,25 @@ class BaseParser(ABC):
             raise ValueError("Presentation not loaded. Call .load() on the parser first.")
 
         return self.presentation
+
+
+class MarkdownParser(BaseParser):
+    """Doesn't load any slides, just loads a .md file of notes.
+
+    Uses headings to delimit slides, and bulleted lists as notes.
+    """
+
+    def load(self, filename: str) -> None:
+        """Load a markdown file."""
+        self.presentation = Presentation()
+        Presentation.notes = []
+
+        f = open(filename, "r")
+        for raw_line in f:
+            line = raw_line.strip()
+            if len(line) == 0:
+                continue
+            elif line[0] == "#":
+                Presentation.notes.append([])
+            else:
+                Presentation.notes[-1].append(line.lstrip("- \t"))
