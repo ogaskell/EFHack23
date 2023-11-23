@@ -1,6 +1,8 @@
 """Will contain classes to read speech from the mic, and output it as a series of timestamped strings."""
 from abc import ABC, abstractmethod
-from typing import AsyncGenerator, AsyncIterator
+import queue
+import threading
+from typing import AsyncGenerator, AsyncIterator, Generator
 from asyncer import asyncify
 from psec.secrets_environment import SecretsEnvironment
 from pvrecorder import PvRecorder
@@ -12,7 +14,7 @@ class BaseSpeechReader(ABC):
     """Abstract base speech reader class"""
 
     @abstractmethod
-    async def generate_tokens(self) -> AsyncGenerator[str, None]:
+    def generate_tokens(self) -> AsyncGenerator[str, None]:
         """Generate tokens from speech and yeild them."""
         pass
 
@@ -26,19 +28,32 @@ class PicoVoiceSpeechReader(BaseSpeechReader):
         self.rec = PvRecorder(frame_length=512, device_index=device_id)
         self.handle = pvc.create(key)
 
-    async def generate_tokens(self) -> AsyncIterator[str]:
+        self.buffer = queue.Queue()
+
+    def generate_tokens(self) -> Generator[str, float, None]:
         """Generate tokens from speech and yeild them."""
+        producer_thread = threading.Thread(target=self.produce_word_loop)
+        self.threadrunning = True
+        producer_thread.start()
+        timeout = 30.0
+
+        while True:
+            timeout = yield self.buffer.get(timeout=timeout)
+
+    def produce_word_loop(self) -> None:
+        """Generate words from an input stream."""
         self.rec.start()
 
         try:
-            while self.rec.is_recording:
-                recording = await asyncify(self.rec.read)()
-                partial_transcript, is_endpoint = await asyncify(self.handle.process)(recording)
-                print("got some words")
+            while self.rec.is_recording and self.threadrunning:
+                recording = self.rec.read()
+                partial_transcript, is_endpoint = self.handle.process(recording)
+                print(partial_transcript)
 
-                for word in partial_transcript.strip().split(" "):
-                    if formatted_word := word.strip().lower():
-                        yield formatted_word
+                # for word in partial_transcript.strip().split(" "):
+                #     if formatted_word := word.strip().lower():
+                #         print("===================", formatted_word)
+                #         #self.buffer.put(formatted_word)
 
                 if is_endpoint:
                     self.rec.stop()
@@ -46,3 +61,8 @@ class PicoVoiceSpeechReader(BaseSpeechReader):
         except BaseException as e:
             self.rec.stop()
             raise e
+
+        self.rec.stop()
+
+    def __del__(self):
+        self.threadrunning = False

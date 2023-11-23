@@ -20,11 +20,11 @@ class App:
     ):
         self.srd, self.ctrl, self.prs, self.wordvec = srd, ctrl, prs, wordvec
 
-    async def run(self) -> None:
+    def run(self) -> None:
         """Run the app."""
         for slide, notes in zip(self.prs.slides, self.prs.notes):
             predictor = Predictor(notes, self.srd.generate_tokens(), self.wordvec)
-            await predictor.wait()
+            predictor.wait()
             self.ctrl.next_slide()
 
 if __name__ == "__main__":

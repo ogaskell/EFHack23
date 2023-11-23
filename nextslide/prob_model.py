@@ -2,8 +2,9 @@
 The prediction model
 """
 import asyncio
+import queue
 from tqdm import tqdm
-from typing import AsyncIterator, Optional, Any
+from typing import AsyncIterator, Generator, Optional, Any
 from rake_nltk import Rake
 import numpy as np
 import math
@@ -36,7 +37,7 @@ class WordVecs:
 
 
 class Predictor:
-    generator: AsyncIterator[str]
+    generator: Generator[str, float, None]
     wordvec: WordVecs
     yak: yake.KeywordExtractor
     keywords: dict[str, float]
@@ -45,7 +46,7 @@ class Predictor:
     seen_keywords = set()
 
 
-    def __init__(self, notes: list[str], generator: AsyncIterator[str], wordvec) -> None:
+    def __init__(self, notes: list[str], generator: Generator[str, float, None], wordvec) -> None:
         self.yak = yake.KeywordExtractor(n=1)
 
         self.keywords = {word: 0 for point in notes for word in get_keywords(point, self.yak)}
@@ -57,7 +58,7 @@ class Predictor:
         key_word_prob = [dist_prob(val) for val in self.keywords.values()]
         return float(np.mean(key_word_prob))
 
-    async def wait(self):
+    def wait(self):
         def is_unseen_keyword(word) -> bool:
             if word in self.seen_keywords:
                 return False
@@ -66,14 +67,10 @@ class Predictor:
             return word in all_keywords
 
         try:
-            while True:
+            for new_word in self.generator:
                 timeout = seconds_from_prob(self.prob())
+                self.generator.send(timeout)
                 print(f"{timeout=}")
-
-                new_word = await asyncio.wait_for(
-                    self.generator.__anext__(),
-                    timeout=timeout
-                )
 
                 print(f"{new_word=}")
 
@@ -88,8 +85,7 @@ class Predictor:
                     self.keywords[word]= max(closest_dist, dist)
 
                 print(f"After {new_word} => {self.prob()} | {self.keywords}")
-
-        except TimeoutError:
+        except queue.Empty:
             print("Next slide")
             return
 

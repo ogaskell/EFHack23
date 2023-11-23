@@ -18,4 +18,5 @@ prs = pars.get_presentation()
 wordvec = WordVecs("dataset/glove.twitter.27B.25d.txt")
 
 app = App(srd, ctrl, prs, wordvec)
-asyncio.run(app.run())
+for word in srd.generate_tokens():
+    print(word)
