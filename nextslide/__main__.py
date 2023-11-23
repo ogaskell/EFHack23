@@ -4,16 +4,6 @@ import asyncio
 import sys
 wordvec = WordVecs("/home/saatvikl/Documents/internships/EFHackathon/dataset/glove.twitter.27B.25d.txt")
 
-# word1 = ''
-# while word1 != 'quit':
-#     try:
-#         word1 = input("word1: ")
-#         word2 = input("word2: ")
-
-#         print(wordvec.distance(word1, word2))
-#     except KeyError:
-#         print("Key did not exist")
-
 async def user_input():
     while True:
         string = await ainput("> ")
