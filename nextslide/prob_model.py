@@ -48,11 +48,11 @@ class Predictor:
 
     def __init__(self, notes: list[str], generator: AsyncIterator[str], wordvec) -> None:
         self.yak = yake.KeywordExtractor(n=1)
+        self.wordvec = wordvec
+        self.generator = generator
 
         self.keywords = {word: 0 for point in notes for word in self.get_keywords(point, self.yak)}
 
-        self.generator = generator
-        self.wordvec = wordvec
 
     def prob(self):
         key_word_prob = [dist_prob(val) for val in self.keywords.values()]
@@ -98,7 +98,7 @@ class Predictor:
             print("Next slide")
             return
 
-    def get_keywords(self, text, yak: yake.KeywordExtractor):
+    def get_keywords(self, text, yak: yake.KeywordExtractor): 
         return [kw for kw, _ in yak.extract_keywords(text) if kw in self.wordvec.words]
 
 def dist_prob(dist: float) -> float:
