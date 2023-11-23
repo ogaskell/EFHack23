@@ -66,17 +66,18 @@ class Predictor:
             all_keywords = self.get_keywords(" ".join(self.seen_text), self.yak)
             return word in all_keywords
 
+
+        print(self.keywords)
+
         try:
             while True:
                 timeout = seconds_from_prob(self.prob())
-                print(f"{timeout=}")
+                print(f"\r{timeout=}                                                                  ", end='')
 
                 new_word = await asyncio.wait_for(
                     self.generator.__anext__(),
                     timeout=timeout
                 )
-
-                print(f"{new_word=}")
 
                 self.seen_text.append(new_word)
 
@@ -92,7 +93,7 @@ class Predictor:
                     dist = self.wordvec.distance(word, new_word)
                     self.keywords[word]= max(closest_dist, dist)
 
-                print(f"After {new_word} => {self.prob()} | {self.keywords}")
+                # print(f"After {new_word} => {self.prob()} | {self.keywords}")
 
         except TimeoutError:
             print("Next slide")
