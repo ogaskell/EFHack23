@@ -52,7 +52,7 @@ class MarkdownParser(BaseParser):
                 self.presentation.notes.append([])
                 self.presentation.slides.append([])
             else:
-                self.presentation.notes[-1].append(line.lstrip("- \t"))
+                self.presentation.notes[-1].append(line.lstrip("- \t").lower())
 
 
 class PPTXParser(BaseParser):
