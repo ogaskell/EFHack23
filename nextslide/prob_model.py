@@ -49,7 +49,7 @@ class Predictor:
     def __init__(self, notes: list[str], generator: AsyncIterator[str], wordvec) -> None:
         self.yak = yake.KeywordExtractor(n=1)
 
-        self.keywords = {word: 0 for point in notes for word in get_keywords(point, self.yak)}
+        self.keywords = {word: 0 for point in notes for word in self.get_keywords(point, self.yak)}
 
         self.generator = generator
         self.wordvec = wordvec
@@ -63,7 +63,7 @@ class Predictor:
             if word in self.seen_keywords:
                 return False
 
-            all_keywords = get_keywords(" ".join(self.seen_text), self.yak)
+            all_keywords = self.get_keywords(" ".join(self.seen_text), self.yak)
             return word in all_keywords
 
         try:
@@ -98,11 +98,12 @@ class Predictor:
             print("Next slide")
             return
 
+    def get_keywords(self, text, yak: yake.KeywordExtractor):
+        return [kw for kw, _ in yak.extract_keywords(text) if kw in self.wordvec.words]
+
 def dist_prob(dist: float) -> float:
     return dist
 
-def get_keywords(text, yak: yake.KeywordExtractor): # TODO
-    return [kw for kw, _ in yak.extract_keywords(text)]
 
 def seconds_from_prob(prob: float) -> float:
     return 29 / (1 + math.exp(10 * (prob - 0.6))) + 1
