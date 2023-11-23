@@ -11,14 +11,14 @@
         Contains the main app class.
     - speech_reader.py
 
-        Will use a generator to recieve mic input live and return timestamped text data.
+        Will use a generator to receive mic input live and return timestamped text data.
     - doc_parser.py
 
-        Contains classes for pasing documents (pptx, pdf, etc.)
+        Contains classes for parsing documents (pptx, pdf, etc.)
     - prob_model.py
 
         Contains the actual predictors.
-        - slide progress calcuator
+        - slide progress calculator
 
             Will find the position within the current slide's bullet points.
             Uses RAKE-NLTK to extract keywords from both the speech and bullet points, and then meaning distance to pair speech with points.
