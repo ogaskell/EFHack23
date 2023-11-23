@@ -2,6 +2,7 @@
 The prediction model
 """
 import asyncio
+from pprint import pformat
 from tqdm import tqdm
 from typing import AsyncIterator, Optional, Any
 from rake_nltk import Rake
@@ -16,6 +17,7 @@ class WordVecs:
 
     def __init__(self, file) -> None:
         with open(file, 'r', encoding='utf-8') as f:
+            print("Loading word vectors...")
             for line in tqdm(f):
                 values = line.strip().split()
                 word = values[0]
@@ -26,6 +28,7 @@ class WordVecs:
                     continue
 
                 self.words[word] = vector
+            print()
 
     def distance(self, word1, word2) -> float:
         try:
@@ -96,8 +99,8 @@ class Predictor:
                 # print(f"After {new_word} => {self.prob()} | {self.keywords}")
 
         except TimeoutError:
-            print(f"\nAfter slide => {self.prob()} | {self.keywords}")
-            print("Next slide")
+            print(f"\nAfter slide => {self.prob()}:\n{pformat(self.keywords)}\n")
+            print("="*8,"Next slide", "="*8)
             return
 
     def get_keywords(self, text, yak: yake.KeywordExtractor):

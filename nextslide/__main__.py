@@ -8,12 +8,14 @@ from .app import App
 
 from pvrecorder import PvRecorder
 
-print("Available devices:\n", "\n".join(PvRecorder.get_available_devices()), sep="")
+print("Available devices:\n", "\n".join([f"{i:02d}.: {name}" for i, name in enumerate(PvRecorder.get_available_devices())]), sep="")
 
 srd = PicoVoiceSpeechReader(int(input("Device index > ")))
+print()
 ctrl = KeypressController()
 pars = PPTXParser()
 pars.load(input("Presentation file (.pptx) > "))
+print()
 prs = pars.get_presentation()
 wordvec = WordVecs("dataset/glove.twitter.27B.25d.txt")
 
