@@ -6,3 +6,5 @@ python-secrets
 
 pvrecorder
 pvcheetah
+
+keyboard
