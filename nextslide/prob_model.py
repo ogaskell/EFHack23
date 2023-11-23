@@ -98,7 +98,7 @@ class Predictor:
             print("Next slide")
             return
 
-    def get_keywords(self, text, yak: yake.KeywordExtractor): 
+    def get_keywords(self, text, yak: yake.KeywordExtractor):
         return [kw for kw, _ in yak.extract_keywords(text) if kw in self.wordvec.words]
 
 def dist_prob(dist: float) -> float:
@@ -106,4 +106,4 @@ def dist_prob(dist: float) -> float:
 
 
 def seconds_from_prob(prob: float) -> float:
-    return 29 / (1 + math.exp(10 * (prob - 0.6))) + 1
+    return 29 / (1 + math.exp(12 * (prob - 0.45))) + 1
