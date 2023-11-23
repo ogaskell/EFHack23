@@ -63,7 +63,7 @@ class Predictor:
             if word in self.seen_keywords:
                 return False
 
-            all_keywords = get_keywords(self.seen_text, self.yak)
+            all_keywords = get_keywords(" ".join(self.seen_text), self.yak)
             return word in all_keywords
 
         try:
