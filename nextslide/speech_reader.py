@@ -1,5 +1,4 @@
 """Will contain classes to read speech from the mic, and output it as a series of timestamped strings."""
-
 from abc import ABC, abstractmethod
 from typing import AsyncGenerator, AsyncIterator
 from asyncer import asyncify
@@ -22,7 +21,7 @@ class PicoVoiceSpeechReader(BaseSpeechReader):
     """Speech Reader using Picovoice Cheetah."""
 
     def __init__(self, device_id: int = 0):
-        key = SecretsEnvironment().read_secrets().get_secret("picovoice-key")
+        key = SecretsEnvironment(environment='nextslide').read_secrets().get_secret("picovoice-key")
 
         self.rec = PvRecorder(frame_length=512, device_index=device_id)
         self.handle = pvc.create(key)
