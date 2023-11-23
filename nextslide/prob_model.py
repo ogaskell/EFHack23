@@ -75,6 +75,8 @@ class Predictor:
                     timeout=timeout
                 )
 
+                print(f"{new_word=}")
+
                 self.seen_text += " " + new_word
                 if not is_unseen_keyword(new_word):
                     continue
