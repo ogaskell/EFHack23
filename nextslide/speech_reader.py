@@ -34,6 +34,7 @@ class PicoVoiceSpeechReader(BaseSpeechReader):
             while self.rec.is_recording:
                 recording = await asyncify(self.rec.read)()
                 partial_transcript, is_endpoint = await asyncify(self.handle.process)(recording)
+                print("got some words")
 
                 for word in partial_transcript.strip().split(" "):
                     if formatted_word := word.strip().lower():

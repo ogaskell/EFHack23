@@ -71,4 +71,4 @@ class PPTXParser(BaseParser):
 
     def process_notes(self, notes: str) -> list[str]:
         """Split notes text into individual points."""
-        return [line.strip().lstrip("- \t") for line in notes.strip().split("\n") if line.strip()]
+        return [line.strip().lstrip("- \t").lower() for line in notes.strip().split("\n") if line.strip()]
