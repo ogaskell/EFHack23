@@ -41,6 +41,7 @@ class MarkdownParser(BaseParser):
         """Load a markdown file."""
         self.presentation = Presentation()
         self.presentation.notes = []
+        self.presentation.slides = []
 
         f = open(filename, "r")
         for raw_line in f:
@@ -49,6 +50,7 @@ class MarkdownParser(BaseParser):
                 continue
             elif line[0] == "#":
                 self.presentation.notes.append([])
+                self.presentation.slides.append([])
             else:
                 self.presentation.notes[-1].append(line.lstrip("- \t"))
 
