@@ -36,7 +36,7 @@ class WordVecs:
 
 
 class Predictor:
-    BUFFER = 10
+    BUFFER = 20
     generator: AsyncIterator[str]
     wordvec: WordVecs
     yak: yake.KeywordExtractor
@@ -47,7 +47,7 @@ class Predictor:
 
 
     def __init__(self, notes: list[str], generator: AsyncIterator[str], wordvec) -> None:
-        self.yak = yake.KeywordExtractor(n=1)
+        self.yak = yake.KeywordExtractor(n=1, top=50)
         self.wordvec = wordvec
         self.generator = generator
 
@@ -56,7 +56,7 @@ class Predictor:
 
     def prob(self):
         key_word_prob = [dist_prob(val) for val in self.keywords.values()]
-        return float(np.mean(key_word_prob))
+        return float(np.array(key_word_prob).prod()**(1.0/len(key_word_prob)))
 
     async def wait(self):
         def is_unseen_keyword(word) -> bool:
@@ -67,12 +67,12 @@ class Predictor:
             return word in all_keywords
 
 
-        print(self.keywords)
+        # print(self.keywords)
 
         try:
             while True:
                 timeout = seconds_from_prob(self.prob())
-                print(f"\r{timeout=}                                                                  ", end='')
+                print(f"\r{timeout=}        ", end='')
 
                 new_word = await asyncio.wait_for(
                     self.generator.__anext__(),
@@ -96,6 +96,7 @@ class Predictor:
                 # print(f"After {new_word} => {self.prob()} | {self.keywords}")
 
         except TimeoutError:
+            print(f"\nAfter slide => {self.prob()} | {self.keywords}")
             print("Next slide")
             return
 
@@ -107,4 +108,4 @@ def dist_prob(dist: float) -> float:
 
 
 def seconds_from_prob(prob: float) -> float:
-    return 29 / (1 + math.exp(12 * (prob - 0.45))) + 1
+    return 29 / (1 + math.exp(8 * (prob - 0.4))) + .5

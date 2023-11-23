@@ -21,7 +21,7 @@ class KeypressController(BaseController):
     Requires superuser unfortunately.
     """
 
-    key: str = "right"
+    key: str = "down"
 
     @staticmethod
     def next_slide() -> None:
