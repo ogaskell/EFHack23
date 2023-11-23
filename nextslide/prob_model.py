@@ -36,12 +36,13 @@ class WordVecs:
 
 
 class Predictor:
+    BUFFER = 10
     generator: AsyncIterator[str]
     wordvec: WordVecs
     yak: yake.KeywordExtractor
     keywords: dict[str, float]
 
-    seen_text = ""
+    seen_text: list[str] = []
     seen_keywords = set()
 
 
@@ -77,7 +78,11 @@ class Predictor:
 
                 print(f"{new_word=}")
 
-                self.seen_text += " " + new_word
+                self.seen_text.append(new_word)
+
+                if len(self.seen_text) > self.BUFFER:
+                    self.seen_text.pop(0)
+
                 if not is_unseen_keyword(new_word):
                     continue
 
