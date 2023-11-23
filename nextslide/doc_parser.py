@@ -3,12 +3,15 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+import pptx
+
 
 class Presentation:
     """Prepresents the combined slides and notes."""
 
-    slides: None = None  # Not currently used
-    notes: list[list[str]]  # notes[slide][bullet_point]
+    def __init__(self):
+        self.slides: None = None  # Not currently used
+        self.notes: list[list[str]] = []  # notes[slide][bullet_point]
 
 
 class BaseParser(ABC):
@@ -37,7 +40,7 @@ class MarkdownParser(BaseParser):
     def load(self, filename: str) -> None:
         """Load a markdown file."""
         self.presentation = Presentation()
-        Presentation.notes = []
+        self.presentation.notes = []
 
         f = open(filename, "r")
         for raw_line in f:
@@ -45,6 +48,25 @@ class MarkdownParser(BaseParser):
             if len(line) == 0:
                 continue
             elif line[0] == "#":
-                Presentation.notes.append([])
+                self.presentation.notes.append([])
             else:
-                Presentation.notes[-1].append(line.lstrip("- \t"))
+                self.presentation.notes[-1].append(line.lstrip("- \t"))
+
+
+class PPTXParser(BaseParser):
+    """Parses a PPTX File."""
+
+    def load(self, filename: str) -> None:
+        """Load a PPTX file."""
+        prs = pptx.Presentation(filename)
+
+        self.presentation = Presentation()
+        self.presentation.notes = [
+            self.process_notes(slide.notes_slide.notes_placeholder.text)
+            if slide.has_notes_slide else "" for slide in prs.slides
+        ]
+        self.presentation.slides = prs.slides
+
+    def process_notes(self, notes: str) -> list[str]:
+        """Split notes text into individual points."""
+        return [line.strip().lstrip("- \t") for line in notes.strip().split("\n") if line.strip()]
