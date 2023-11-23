@@ -108,4 +108,4 @@ def dist_prob(dist: float) -> float:
 
 
 def seconds_from_prob(prob: float) -> float:
-    return 29 / (1 + math.exp(8 * (prob - 0.4))) + .5
+    return 29 / (1 + math.exp(8 * (prob - 0.4))) + .25
