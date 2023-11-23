@@ -1,7 +1,7 @@
 """Contains a number of classes used to parse a given file/s, to retrieve slides and notes."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Optional
 
 import pptx
 
@@ -10,7 +10,7 @@ class Presentation:
     """Prepresents the combined slides and notes."""
 
     def __init__(self):
-        self.slides: None = None  # Not currently used
+        self.slides: Any = None  # Not currently used
         self.notes: list[list[str]] = []  # notes[slide][bullet_point]
 
 
