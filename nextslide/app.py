@@ -19,6 +19,7 @@ class App:
         wordvec: WordVecs
     ):
         self.srd, self.ctrl, self.prs, self.wordvec = srd, ctrl, prs, wordvec
+        ctrl.next_slide()
 
     async def run(self) -> None:
         """Run the app."""

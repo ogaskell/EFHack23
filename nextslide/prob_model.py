@@ -105,4 +105,4 @@ def get_keywords(text, yak: yake.KeywordExtractor): # TODO
     return [kw for kw, _ in yak.extract_keywords(text)]
 
 def seconds_from_prob(prob: float) -> float:
-    return 28 / (1 + math.exp(20 * (prob - 0.6))) + 2
+    return 29 / (1 + math.exp(10 * (prob - 0.6))) + 1
